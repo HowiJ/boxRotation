@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { margin: 0; }
+            canvas { width: 100%; height: 100%; }
+        </style>
+    </head>
+    <body>
+
+        <script src="./js/three.min.js" charset="utf-8"></script>
+        <script>
+        var //New THREE.js Scene
+        scene      = new THREE.Scene(),
+        //New THREE.js Camera (There's multiple but for now, we use this one)
+        //                                      ( FOV, Aspect Ratio (Generally want width/height), near clipping plane, far clipping plane )
+        camera     = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 ),
+        //Renderer, there's more than just WebGL but for now we use this one.
+        renderer   = new THREE.WebGLRenderer();
+
+        //Set the size of the renderer (width, height, optional boolean for keep size but smaller resolution);
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        //Add it to the document
+        document.body.appendChild( renderer.domElement );
+
+
+
+        var //Object that contains all points and fill faces of the cube
+        geometry = new THREE.BoxGeometry( 1, 1, 1 ),
+        //Provide the box with a texture. (Mesh and color) (in this case: basic material)
+        material = function(mat) {
+            return new THREE.MeshNormalMaterial( { color: mat, wireframe: false })
+        };
+        //Create a cube that has the geometry of above and the material of above
+        var cube     = new THREE.Mesh( geometry, material('blue') );
+
+        var ambient  = new THREE.AmbientLight( 0x080808 );
+        // scene.add( ambient );
+        var light    = new THREE.Light( 0xffffff, 0.5 );
+        light.position.x = 0;
+        light.position.y = 1;
+        light.position.z = 4;
+        // scene.add( light );
+
+        //Add this to the scene (adds it to coordinates[0,0,0])
+        var objs = [];
+        var randColor = function() {
+            valid = 'abcdefABCDEF1234567890';
+            color = '#';
+            for (var i = 0; i < 6; i++) {
+                color = color+valid[Math.floor(Math.random()*valid.length)];
+            }
+            return color;
+        }
+        for (var i = 0, y = 0, z = 0; i < 27; i++, y++, z++) {
+            if (i < 9) {
+                objs.push( new THREE.Mesh( geometry, material(randColor()) ) );
+                objs[i].position.x = 2;
+            } else if (i < 18) {
+                objs.push( new THREE.Mesh( geometry, material(randColor()) ) );
+                objs[i].position.x = 0;
+            } else if (i < 27) {
+                objs.push( new THREE.Mesh( geometry, material(randColor()) ) );
+                objs[i].position.x = -2;
+            }
+
+
+            if (y >= 9) {
+                y = 0;
+            }
+            if (y < 3) {
+                objs[i].position.y = 2;
+            } else if (y < 6) {
+                objs[i].position.y = 0;
+            } else if (y < 9) {
+                objs[i].position.y = -2;
+            }
+
+
+            if (z == 0) {
+                objs[i].position.z = 2;
+            } else if (z == 1) {
+                objs[i].position.z = 0;
+            } else if (z == 2) {
+                objs[i].position.z = -2;
+                z = -1;
+            }
+
+
+            scene.add(objs[i]);
+        }
+
+        // //Since camera spawns at [0,0,0], it would be inside the cube we made, so we set the camera away from the cube.
+        camera.position.z = 10;
+        //
+        // //Creates a loop that renders at 60 times a second
+        function render() {
+            requestAnimationFrame( render );
+            renderer.render( scene, camera );
+
+            for (var obj of objs) {
+                if ( obj.position.x > 0 ) {
+                    obj.rotation.x += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.x == 0 ) {
+                    obj.rotation.y += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.x < 0 ) {
+                    obj.rotation.z -= Math.random()*(0.05 - 0.01) + 0.01;
+                }
+
+                if ( obj.position.y > 0 ) {
+                    obj.rotation.x += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.y == 0 ) {
+                    obj.rotation.y += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.y < 0 ) {
+                    obj.rotation.z -= Math.random()*(0.05 - 0.01) + 0.01;
+                }
+
+                if ( obj.position.z > 0 ) {
+                    obj.rotation.x += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.z == 0 ) {
+                    obj.rotation.y += Math.random()*(0.05 - 0.01) + 0.01;
+                } if ( obj.position.z < 0 ) {
+                    obj.rotation.z -= Math.random()*(0.05 - 0.01) + 0.01;
+                }
+            }
+
+            if (Math.floor(Math.random()*1) > 0) {
+                scene.rotation.x += Math.random()*(0.01 - 0.005) + 0.005;
+            } else {
+                scene.rotation.x -= Math.random()*(0.01 - 0.005) + 0.005;
+            }
+
+            if (Math.floor(Math.random()*1) > 0) {
+                scene.rotation.y += Math.random()*(0.01 - 0.005) + 0.005;
+            } else {
+                scene.rotation.y -= Math.random()*(0.01 - 0.005) + 0.005;
+            }
+
+            if (Math.floor(Math.random()*1) > 0) {
+                scene.rotation.z += Math.random()*(0.01 - 0.005) + 0.005;
+            } else {
+                scene.rotation.z -= Math.random()*(0.01 - 0.005) + 0.005;
+            }
+        }
+        render();
+        </script>
+    </body>
+</html>
