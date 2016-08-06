@@ -23,11 +23,15 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         //Add it to the document
         document.body.appendChild( renderer.domElement );
+        window.onresize = function(e) {
+            renderer.setSize( window.innerWidth, window.innerHeight );
+        }
 
 
 
         var //Object that contains all points and fill faces of the cube
         geometry = new THREE.BoxGeometry( 1, 1, 1 ),
+        circle   = new THREE.SphereGeometry( 1, 64 ),
         //Provide the box with a texture. (Mesh and color) (in this case: basic material)
         material = function(mat) {
             return new THREE.MeshNormalMaterial( { color: mat, wireframe: false })
